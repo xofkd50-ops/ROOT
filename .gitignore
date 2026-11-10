@@ -1,0 +1,14 @@
+myvenv/
+YOLOv5/venv/
+YOLOv5/*.pt
+
+PhotoBlogServer/htmlcov/
+PhotoBlogServer/.coverage
+
+**/__pycache__/
+*.py[cod]
+.DS_Store
+**/.gradle/
+**/build/
+**/local.properties
+**/.idea/

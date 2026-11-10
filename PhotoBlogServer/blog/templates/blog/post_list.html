@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Web Service Programming blog</title>
+    <style>
+        body { margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #fff; }
+        .page-header { 
+            background-color: #ff9400;
+            padding: 20px 30px; 
+            color: white; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .page-header h1 { 
+            margin: 0; font-size: 38px; font-style: italic; font-weight: bold; font-family: 'Comic Sans MS', 'Trebuchet MS', cursive, sans-serif;
+        }
+        .page-header .plus-icon { 
+            font-size: 46px; font-weight: bold; color: white; text-decoration: none; 
+        }
+        .toolbar {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 14px 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .stats-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .badge {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffcc80;
+            border-radius: 16px;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .badge.active {
+            background: #ff9400;
+            color: #fff;
+            border-color: #ff9400;
+        }
+        .search-form {
+            display: flex;
+            gap: 6px;
+        }
+        .search-form input[type="text"] {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 220px;
+        }
+        .search-form button, .search-form a.reset-btn {
+            padding: 6px 12px;
+            background-color: #ff9400;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .search-form a.reset-btn {
+            background-color: #777;
+        }
+        .content { padding: 30px; }
+        .post { margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 24px; position: relative; }
+        .post .date { color: #888; font-size: 13px; margin-bottom: 8px; }
+        .post-header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .post h2 { margin: 0; font-size: 28px; font-weight: bold; font-style: italic; color: #000; font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif; }
+        .post p { margin: 4px 0 12px 0; color: #333; font-size: 14px; }
+        .post img { max-width: 360px; height: auto; border-radius: 4px; margin-top: 6px; display: block; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+        .delete-btn {
+            background-color: #ef5350;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .delete-btn:hover { background-color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>Intruder Detection</h1>
+        <a href="/api_root/Post/" class="plus-icon" title="API Root 이동">+</a>
+    </header>
+
+    <div class="toolbar">
+        <div class="stats-badges">
+            <a href="/" class="badge {% if not query %}active{% endif %}">전체 ({{ total_count }}건)</a>
+            {% for cls_name, cnt in class_counts.items %}
+                <a href="/?q={{ cls_name }}" class="badge {% if query == cls_name %}active{% endif %}">{{ cls_name }}: {{ cnt }}건</a>
+            {% endfor %}
+        </div>
+        <form method="get" action="/" class="search-form">
+            <input type="text" name="q" value="{{ query }}" placeholder="검출 객체 검색 (예: person, cell phone)">
+            <button type="submit">필터 검색</button>
+            {% if query %}
+                <a href="/" class="reset-btn">초기화</a>
+            {% endif %}
+        </form>
+    </div>
+    
+    <div class="content">
+        {% for post in posts %}
+            <div class="post">
+                <div class="date">{{ post.created_date|date:"Y년 n월 j일 g:i A" }}</div>
+                <div class="post-header-row">
+                    <h2>{{ post.title }}</h2>
+                    <form method="post" action="{% url 'post_delete' post.pk %}" style="margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-btn">삭제</button>
+                    </form>
+                </div>
+                <p>{{ post.text }}</p>
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                {% endif %}
+            </div>
+        {% empty %}
+            <p style="color:#888;">검출된 이미지가 없습니다.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
